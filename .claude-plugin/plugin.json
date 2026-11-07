@@ -1,0 +1,10 @@
+{
+  "name": "watchkeeper",
+  "version": "0.1.0",
+  "description": "Shift-changeover protocol for many Claude Code sessions on one repo: ownership board, append-only decisions, orphan marking, manager under written authorization, diff-triggered verifier.",
+  "author": { "name": "Val Ye", "url": "https://github.com/val-ye" },
+  "homepage": "https://github.com/val-ye/watchkeeper",
+  "repository": "https://github.com/val-ye/watchkeeper",
+  "license": "MIT",
+  "keywords": ["multi-agent", "coordination", "ownership", "decisions", "verification", "hooks", "overnight"]
+}

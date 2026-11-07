@@ -1,0 +1,15 @@
+{
+  "name": "watchkeeper",
+  "owner": {
+    "name": "Val Ye"
+  },
+  "plugins": [
+    {
+      "name": "watchkeeper",
+      "description": "Shift-changeover protocol for many Claude Code sessions on one repo.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ],
+  "description": "watchkeeper: shift-changeover protocol for many Claude Code sessions on one repo"
+}

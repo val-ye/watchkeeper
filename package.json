@@ -1,0 +1,13 @@
+{
+  "name": "watchkeeper-plugin",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Claude Code plugin: shift-changeover protocol for many sessions on one repo",
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "validate": "claude plugin validate . --strict"
+  },
+  "license": "MIT"
+}

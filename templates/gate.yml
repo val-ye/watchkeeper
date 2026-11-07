@@ -1,0 +1,30 @@
+# watchkeeper merge gate for GitHub Actions. Copy to .github/workflows/watchkeeper-gate.yml.
+# Fails the PR when ASSUMPTIONS.md has open rows for the head branch, or when a Tier 2 diff has no verification record.
+# Requires .watchkeeper/ to be committed (not --local mode).
+name: watchkeeper gate
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Fetch watchkeeper
+        run: git clone --depth 1 https://github.com/val-ye/watchkeeper /tmp/watchkeeper
+      - name: Open assumptions on this branch
+        run: |
+          out=$(node /tmp/watchkeeper/bin/wk.mjs assumptions --branch "${{ github.head_ref }}")
+          echo "$out"
+          [ "$out" = "none open" ] || { echo "::error::open assumptions block merge"; exit 1; }
+      - name: Tier 2 needs a verification record
+        run: |
+          git fetch origin "${{ github.base_ref }}" --depth=200
+          node /tmp/watchkeeper/bin/wk.mjs tier --committed --json --base "origin/${{ github.base_ref }}" > /tmp/tier.json || true
+          tier=$(node -e 'const j=JSON.parse(require("fs").readFileSync("/tmp/tier.json","utf8").split("\n").slice(1).join("\n")||"{}");console.log(j.tier??0)')
+          hash=$(node -e 'const j=JSON.parse(require("fs").readFileSync("/tmp/tier.json","utf8").split("\n").slice(1).join("\n")||"{}");console.log(j.hash??"")')
+          echo "tier=$tier hash=$hash"
+          if [ "$tier" = "2" ] && [ ! -f ".watchkeeper/verifications/$hash.md" ]; then echo "::error::Tier 2 change without verification record $hash"; exit 1; fi
