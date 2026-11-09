@@ -111,3 +111,13 @@ test('lock: two concurrent writers both land', async () => {
   const board = read(path.join(root, 'OWNERSHIP.md'));
   for (const n of ['a', 'b', 'c', 'd']) assert.match(board, new RegExp(`\\| ${n}/ \\| ${n}{8} \\| active`));
 });
+
+test('unverified claim splits into claim and reason; CLI pseudo-sessions are not persisted', async () => {
+  const { root } = makeRepo({ worktree: false });
+  initRepo(root);
+  const r = cli(root, 'claim', 'src/');
+  assert.equal(r.code, 0, r.err);
+  assert.equal(fs.readdirSync(path.join(root, '.watchkeeper/local/sessions')).length, 0, 'no record for cli-* ids');
+  const { newestPending } = await import('../lib/verifications.mjs');
+  assert.equal(newestPending(resolveContext(root)), null);
+});

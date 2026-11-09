@@ -21,9 +21,12 @@ hookMain((ctx, input) => {
   const already = assumptions.load(ctx).filter((a) => a.branch === branch && !a.closed).map((a) => a.claim);
   let added = 0;
   for (const c of v.claims.filter((x) => x.label === 'unverified')) {
-    const claim = c.text.replace(/\.?\s*(Registered|Why)[:.].*$/i, '').trim().slice(0, 160);
+    const body = c.text.replace(/\.?\s*Registered\.?\s*$/i, '').trim();
+    const cut = body.search(/[.;:]\s+/);
+    const claim = (cut > 0 ? body.slice(0, cut) : body).trim().slice(0, 160);
+    const why = (cut > 0 ? body.slice(cut + 1).trim() : 'no reason given').slice(0, 120);
     if (already.includes(claim)) continue;
-    assumptions.append(ctx, { branch, area, claim, why: c.text.slice(0, 120) });
+    assumptions.append(ctx, { branch, area, claim, why });
     added++;
   }
   verifications.clearPending(ctx, hash);

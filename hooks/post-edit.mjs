@@ -22,7 +22,8 @@ hookMain((ctx, input) => {
       const takeover = row && row.owner && row.owner !== me;
       board.upsert(b, area, {
         owner: me, status: 'active', since: row && row.owner === me && row.since ? row.since : now, touched: now, branch,
-        note: takeover ? `taken over from ${row.owner} (${row.status}) on first edit` : (row && row.owner === me ? row.note : 'auto-claimed on first edit'),
+        note: takeover ? `taken over from ${row.owner} (${row.status}) on first edit`
+          : (row && row.owner === me ? (['active', 'idle'].includes(row.status) ? row.note : `resumed ${now} (was ${row.status})`) : 'auto-claimed on first edit'),
       });
       return true;
     }
